@@ -1,0 +1,11 @@
+@11ty/eleventy::eleventy
+eslint::eslint
+gatsby-cli::gatsby
+gulp-cli::gulp
+pa11y::pa11y
+vsce::vsce
+@vue/cli::vue
+@gridsome/cli::gridsome
+netlify-cli::netlify
+yo::yo
+wp-cli::wp
