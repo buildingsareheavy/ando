@@ -19,19 +19,24 @@ git clone git@github.com/buildingsareheavy/ando.git && cd ando
 Review the script (please don't run scripts you don't understand):
 
 ```sh
-less concrete
+less blueprints
 ```
 
-concrete:
+blueprints:
 
 ```sh
 cd ando
-./concrete 2>&1 | tee ~/concrete.log
+
+// Basic Setup
+sh goAndo
+
+// Login Setup
+sh goAndo 2>&1 | tee ~/ando.log
 ```
 
 Just follow the prompts and you’ll be fine. 👌
 
-:warning: Warning: I advise against running [this script](concrete) unless you understand what it’s doing to your computer.
+:warning: Warning: I advise against running [this script](goAndo) unless you understand what it’s doing to your computer.
 
 I created this based on my own preferences; your mileage may vary.
 
@@ -39,7 +44,7 @@ Once the script is done, quit and relaunch Terminal.
 
 It is highly recommended to run the script regularly to keep your computer up to date.
 
-Your last `ando` run will be saved to `~/concrete.log`. To review it, run `less ~/concrete.log`.
+Your last `sh goAndo` run will be saved to `~/ando.log`. To review it, run `less ~/ando.log`.
 
 That's it!
 
@@ -123,57 +128,6 @@ The setup process will install:
 <sub>See [`materials`](materials) for the full list of apps that will be installed. Adjust it to your personal taste.</sub>
 
 It should take less than 20 minutes to install (depends on your machine).
-
-## ✨ Just add `~/.ornamentation`
-
-Your `~/.ornamentation` is added at the end of the `ando` script. Put your customizations there.
-For example:
-
-```sh
-#!/usr/bin/env bash
-
-SETUP_ROOT=$HOME/.setup
-
-NERDFONTS_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/ryanoasis/nerd-fonts/releases/latest)
-NERDFONTS_VERSION=$(get_github_version $NERDFONTS_RELEASE)
-
-DIRECTORIES=(
-    $HOME/Desktop/code
-    $HOME/Desktop/design
-    $HOME/Desktop/*dump
-    $HOME/Desktop/GIFs
-    $HOME/Desktop/projects
-    $HOME/Desktop/screenshots
-)
-
-NERDFONTS=(
-    SpaceMono
-    Hack
-    AnonymousPro
-    Inconsolata
-)
-
-step "Making directories…"
-for dir in ${DIRECTORIES[@]}; do
-    mkd $dir
-done
-
-step "Installing fonts…"
-for font in ${NERDFONTS[@]}; do
-    if [ ! -d ~/Library/Fonts/$font ]; then
-        printf "${indent}  [↓] $font "
-        wget -P ~/Library/Fonts https://github.com/ryanoasis/nerd-fonts/releases/download/$NERDFONTS_VERSION/$font.zip --quiet;unzip -q ~/Library/Fonts/$font -d ~/Library/Fonts/$font
-        print_in_green "${bold}✓ done!${normal}\n"
-    else
-        print_muted "${indent}✓ $font already installed. Skipped."
-    fi
-done
-```
-
-Write your customizations such that they can be run safely more than once.
-See the `concrete` script for examples.
-
-`ando` functions such as `step` and `link` can be used in your `~/.ornamentation`.
 
 ## Known Issues
 

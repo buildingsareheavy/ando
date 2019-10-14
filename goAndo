@@ -9,14 +9,14 @@ trap 'ret=$?; test $ret -ne 0 && printf "\n   \e[31m\033[0m  Ando has failed 
 set -e
 
 ###############################################################################
-# FOUNDATION: Check for required functions file
+# BLUEPRINTS: Check for required functions file
 ###############################################################################
 
-if [ -e foundation ]; then
+if [ -e blueprints ]; then
 	cd "$(dirname "${BASH_SOURCE[0]}")" \
-		&& . "foundation"
+		&& . "blueprints"
 else
-	printf "\n ⚠️  ./foundation not found. \n"
+	printf "\n ⚠️  ./blueprints not found. \n"
 	exit 1
 fi
 
@@ -27,22 +27,17 @@ fi
 check_bash_version
 
 ###############################################################################
-# Get in Formation!          http://patorjk.com/software/taag/ ( font: Script )
+# Go Ando Go!          https://www.ascii-art-generator.org/ ( font: Slant )
 ###############################################################################
 
-printf "
-      ___           ___           ___           ___     
-     /\  \         /\__\         /\  \         /\  \    
-    /::\  \       /::|  |       /::\  \       /::\  \   
-   /:/\:\  \     /:|:|  |      /:/\:\  \     /:/\:\  \  
-  /::\~\:\  \   /:/|:|  |__   /:/  \:\__\   /:/  \:\  \ 
- /:/\:\ \:\__\ /:/ |:| /\__\ /:/__/ \:|__| /:/__/ \:\__\
- \/__\:\/:/  / \/__|:|/:/  / \:\  \ /:/  / \:\  \ /:/  /
-      \::/  /      |:/:/  /   \:\  /:/  /   \:\  /:/  / 
-      /:/  /       |::/  /     \:\/:/  /     \:\/:/  /  
-     /:/  /        /:/  /       \::/__/       \::/  /   
-     \/__/         \/__/         ~~            \/__/    
+printf "       
 
+    ___       _   __   ____     _____
+   /   |     / | / /  / __ \   / __  /
+  / /| |    /  |/ /  / / / /  / / / /
+ / ___ |   / /|  /  / /_/ /  / /_/ / 
+/_/  |_|  /_/ |_/  /_____/   \____/  
+                                       
 ╭───────────────────────────────────────────────────╮
 │  Safe to run multiple times on the same machine.  │
 │  It ${green}installs${reset}, ${blue}upgrades${reset}, or ${yellow}skips${reset} packages based   │
@@ -148,6 +143,21 @@ if [ -e $cwd/materials/brews ]; then
 	done
 fi
 
+
+###############################################################################
+# INSTALL: taps
+###############################################################################
+if [ -e $cwd/materials/taps ]; then
+	chapter "Installing Homebrew taps…"
+
+	for brew in $(<$cwd/materials/taps); do
+		install_brew_taps $tap
+	done
+fi
+
+
+
+
 ###############################################################################
 # UPDATE: Homebrew
 ###############################################################################
@@ -212,18 +222,23 @@ fi
 
 
 ###############################################################################
-# OPTIONAL: Customizations
+# LINK: dotfiles
 ###############################################################################
-chapter "Adding the extras…"
-if [ -f "$HOME/.extras" ]; then
-	if ask "Do you want to add hot sauce?" Y; then
-		. "$HOME/.extras"; printf "\n  Let's add the ${bold}extras.${normal}\n";
+chapter "Linking dotfiles…"
+if [ -e $cwd/materials/dotfiles ]; then
+	
+		if ask "Last Step. Do you want to link the dotfiles?" Y; then
+			symlink_dotfiles;
+			echo "\n";
+			print_success "Dotfiles complete.";
+	
 	else
-		print_success_muted "Extras declined. Skipped.";
+		print_success_muted "Linking was declined. Skipped.";
 	fi
 else
-	print_warning "No ~/.extras found. Skipping."
+	print_warning "Something went wrong. Skipping."
 fi
+
 
 ###############################################################################
 # END

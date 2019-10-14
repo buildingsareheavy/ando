@@ -9,42 +9,42 @@ module.exports = {
     updateChannel: 'stable',
 
     // default font size in pixels for all tabs
-    fontSize: 22,
+    fontSize: 16,
 
     // font family with optional fallbacks
     fontFamily:
-      'Inconsolata for Powerline, "DejaVu Sans Mono", Consolas, "Lucida Console", monospace',
+      'DejaVuSansMono Nerd Font Mono, "DejaVu Sans Mono", Consolas, "Lucida Console", monospace',
 
     // default font weight: 'normal' or 'bold'
     fontWeight: 'normal',
 
     // font weight for bold characters: 'normal' or 'bold'
-    fontWeightBold: 'bold',
+    fontWeightBold: 'normal',
 
     // terminal cursor background color and opacity (hex, rgb, hsl, hsv, hwb or cmyk)
-    cursorColor: '#ff8a80',
+    cursorColor: '#B3B9C5',
 
     // terminal text color under BLOCK cursor
     cursorAccentColor: '#000',
 
     // `'BEAM'` for |, `'UNDERLINE'` for _, `'BLOCK'` for █
-    cursorShape: 'UNDERLINE',
+    cursorShape: 'BLOCK',
 
     // set to `true` (without backticks and without quotes) for blinking cursor
-    cursorBlink: true,
+    cursorBlink: false,
 
     // color of the text
     // foregroundColor: '#fff',
 
     // terminal background color
     // opacity is only supported on macOS
-    // backgroundColor: '#111',
+    // backgroundColor: '#242424',
 
     // terminal selection color
     // selectionColor: 'rgba(248,255,229,0.3)',
 
     // border color (window, tabs)
-    borderColor: '#333',
+    // borderColor: '#333',
 
     // custom CSS to embed in the main window
     css: '',
@@ -68,7 +68,7 @@ module.exports = {
     // including the 6 x 6 color cubes and the grayscale map, just provide
     // an array here instead of a color map object
     colors: {
-      // black: '#444',
+      black: '#444',
       // red: '#F44336',
       // green: '#7CB342',
       // yellow: '#FDD835',
@@ -132,7 +132,7 @@ module.exports = {
   //   `hyperpower`
   //   `@company/project`
   //   `project#1.0.1`
-  plugins: ['hyper-search', 'hyperterm-new-moon-theme'],
+  plugins: ['hyper-search', 'hyperterm-new-moon-theme', 'hyperterm-final-say'],
 
   // in development, you can create a directory under
   // `~/.hyper_plugins/local/` and include it here

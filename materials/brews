@@ -6,3 +6,5 @@ hub
 yarn
 rbenv
 zsh
+zsh-syntax-highlighting
+thefuck

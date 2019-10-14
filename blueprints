@@ -23,7 +23,7 @@ indent="   "
 # Get full directory name of this script
 cwd="$(cd "$(dirname "$0")" && pwd)"
 
-DOTFILES_ROOT=$HOME/.dotfiles
+DOTFILES_ROOT=$cwd/dotfiles
 
 ###############################################################################
 # Utility Functions
@@ -414,10 +414,15 @@ mkd() {
 symlink_dotfiles() {
   local overwrite_all=false backup_all=false skip_all=false
 
-  for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink' -not -path '*.git*')
-  do
-    dst="$HOME/.$(basename "${src%.*}")"
-    _link_file "$src" "$dst"
+
+  # for src in $(<$cwd/materials/dotfiles); do
+	# 	# Removes .zshrc from $HOME (if it exists) and symlinks the .zshrc file from the .dotfiles
+	# 	rm -rf $HOME/$src
+	# 	ln -s $cwd/dotfiles/$src $HOME/$src
+
+  for src in $(<$cwd/materials/dotfiles); do
+    dst="$HOME/$src"
+    _link_file "$cwd/dotfiles/$src" "$dst"
   done
 }
 
@@ -555,6 +560,16 @@ install_brews() {
     fi
 }
 
+install_brew_taps() {
+    if test ! $(brew tap | grep $tap); then
+        echo_install "Installing $tap"
+		brew install $tap >/dev/null
+		print_in_green "${bold}✓ installed!${normal}\n"
+	else
+		print_success_muted "$brew already installed. Skipped."
+    fi
+}
+
 install_application_via_brew() {
     if [[ ! $(brew cask list | grep $cask) ]]; then
         echo_install "Installing $cask"
@@ -639,6 +654,6 @@ label_green() {
 
 e_all_finished() {
     printf "
-  ${bold}Everything is finished, now you must create the rest. ${normal} 
+  ${bold}Everything is installed. Make Ando proud. ${normal} 
 "
 }
