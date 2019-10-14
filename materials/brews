@@ -3,8 +3,8 @@ tig
 mas
 wget
 hub
-yarn
 rbenv
+yarn
 zsh
 zsh-syntax-highlighting
 thefuck
