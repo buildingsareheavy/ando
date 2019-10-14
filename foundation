@@ -637,7 +637,7 @@ label_green() {
     printf "\e[30;42m $1 \e[0m\e[32m $2 \033[0m\n"
 }
 
-e_all_finshed() {
+e_all_finished() {
     printf "
   ${bold}Everything is finished, now you must create the rest. ${normal} 
 "

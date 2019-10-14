@@ -1,9 +1,9 @@
 firefox
-firefox-developer-edition
 franz
 google-chrome
 hyper
 mamp
-microsoft-edge
+homebrew/cask-versions/firefox-developer-edition
+microsoft-edge-dev
 spotify
 visual-studio-code
