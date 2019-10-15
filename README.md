@@ -73,15 +73,6 @@ The setup process will install:
   </details>
 
 <details>
-<summary>Homebrew: Taps</summary>
-
-- [homebrew/cask-versions](https://github.com/Homebrew/homebrew-cask-versions) Alternate versions of [Homebrew](https://brew.sh/) Casks.  
-  **This is so we can install Firefox Developer Edition**
-- [homebrew/cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts) Casks of Fonts.
-  **This is so we can install Powerline and Nerd Fonts later**
-  </details>
-
-<details>
 <summary>Homebrew: Casks</summary>
 
 - [Firefox](https://www.mozilla.org/en-US/firefox/new/) for web browsing and testing.

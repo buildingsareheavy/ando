@@ -1,5 +1,5 @@
 firefox
-firefox-developer-edition
+homebrew/cask-versions/firefox-developer-edition
 franz
 google-chrome
 hyper
@@ -7,5 +7,5 @@ mamp
 microsoft-edge-dev
 spotify
 visual-studio-code
-font-dejavusansmono-nerd-font-mono
-font-victor-mono
+homebrew/cask-fonts/font-dejavusansmono-nerd-font-mono
+homebrew/cask-fonts/font-victor-mono 

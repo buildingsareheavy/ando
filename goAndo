@@ -147,13 +147,13 @@ fi
 ###############################################################################
 # INSTALL: taps
 ###############################################################################
-if [ -e $cwd/materials/taps ]; then
-	chapter "Installing Homebrew taps…"
+# if [ -e $cwd/materials/taps ]; then
+# 	chapter "Installing Homebrew taps…"
 
-	for brew in $(<$cwd/materials/taps); do
-		install_brew_taps $tap
-	done
-fi
+# 	for brew in $(<$cwd/materials/taps); do
+# 		install_brew_taps $tap
+# 	done
+# fi
 
 
 
