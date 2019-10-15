@@ -114,12 +114,23 @@ The setup process will install:
 
   </details>
 
+
+
+
 <details>
-<summary>Dotfiles</summary>
+<summary>ZSH Settings <span>(Prompted): For Initial Setup Only</span></summary>
+
+- [Oh My ZSH](https://github.com/robbyrussell/oh-my-zsh/) a framework for managing your zsh configuration.
+- [Powerlevel10K](https://github.com/romkatv/powerlevel10k) a ZSH theme.
+</details>
+
+
+<details>
+<summary>Dotfiles <span>(Prompted)</span></summary>
 
 - **.zshrc** for customizing your [Oh-My-ZSH!](https://ohmyz.sh/) settings.
-- **.hyper.js** for customizing your (Hyper)[https://hyper.is/] terminal. _This is where the fonts color themes are held. Current theme is [New Moon](https://github.com/Tmeister/hyperterm-new-moon-theme)_.
-- **.p10k.zsh** for customizing your (Powerlevel10K)[https://github.com/romkatv/powerlevel10k] ZSH theme. _This is where the terminal theme is held. Like the arrows and git icons._
+- **.hyper.js** for customizing your [Hyper](https://hyper.is/) terminal. _This is where the fonts color themes are held. Current theme is [New Moon](https://github.com/Tmeister/hyperterm-new-moon-theme)_.
+- **.p10k.zsh** for customizing your [Powerlevel10K](https://github.com/romkatv/powerlevel10k) ZSH theme. _This is where the terminal theme is held. Like the arrows and git icons._
 
 -
 
@@ -153,3 +164,13 @@ This code is heavily based on and copied from: [Mina Markham's](https://github.c
 Ando is free software, and may be redistributed under the terms specified in the [LICENSE] file.
 
 [license]: LICENSE
+
+
+<style>
+summary {
+  font-weight: bold;
+}
+summary span {
+  font-weight: normal;
+}
+</style>

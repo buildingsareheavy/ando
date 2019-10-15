@@ -426,6 +426,16 @@ symlink_dotfiles() {
   done
 }
 
+install_ohmyzsh() {
+    # Install Oh My ZSH (unattended)
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+    # Install Powerlevel10K theme into Oh My ZSH custom themes
+    git clone https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
+    # Alias Powerlevel10K folder into $HOME directory
+    ln -s $HOME/.oh-my-zsh/custom/themes/powerlevel10k $HOME/ 
+}
+
+
 ###############################################################################
 # Prompts
 ###############################################################################
