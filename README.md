@@ -149,6 +149,8 @@ This should sync all of your VSCode settings, extensions and preferences.
 
 ## Known Issues
 
+If you are doing a completely fresh install and have not installed Xcode already, it will prompt you to do so but also say that Ando has failed. Install Xcode and run the script again.
+
 Cask does not recognize applications installed outside of Homebrew Cask – in the case that the script fails, you can either remove the application from the install list or uninstall the application causing the failure and try again.
 
 ## Acknowledgements
