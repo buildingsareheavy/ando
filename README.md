@@ -114,16 +114,12 @@ The setup process will install:
 
   </details>
 
-
-
-
 <details>
 <summary>ZSH Settings <span>(Prompted): For Initial Setup Only</span></summary>
 
 - [Oh My ZSH](https://github.com/robbyrussell/oh-my-zsh/) a framework for managing your zsh configuration.
 - [Powerlevel10K](https://github.com/romkatv/powerlevel10k) a ZSH theme.
-</details>
-
+  </details>
 
 <details>
 <summary>Dotfiles <span>(Prompted)</span></summary>
@@ -164,13 +160,3 @@ This code is heavily based on and copied from: [Mina Markham's](https://github.c
 Ando is free software, and may be redistributed under the terms specified in the [LICENSE] file.
 
 [license]: LICENSE
-
-
-<style>
-summary {
-  font-weight: bold;
-}
-summary span {
-  font-weight: normal;
-}
-</style>
