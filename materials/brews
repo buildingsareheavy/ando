@@ -3,6 +3,7 @@ tig
 mas
 wget
 hub
+imageoptim-cli
 rbenv
 yarn
 zsh
