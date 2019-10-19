@@ -82,10 +82,9 @@ The setup process will install:
 
 - [Firefox](https://www.mozilla.org/en-US/firefox/new/) for web browsing and testing.
 - [Firefox Developer Edition](https://www.mozilla.org/en-US/firefox/developer/) is my main web browser for development. Best CSS tools built in. Read more [here](https://www.smashingmagazine.com/2019/10/guide-new-experimental-css-devtools-firefox/).
-- [Franz](https://meetfranz.com/) for messaging.
 - [Google Chrome](https://www.google.com/chrome/browser/desktop/) for fast and free web browsing.
 - [Hyper](https://hyper.is/) for an alternative terminal.
-- [ImageOptim-CLI](https://github.com/JamieMason/ImageOptim-CLI) to make batch optimisation of images part of your automated build process.
+- [ImageOptim](https://imageoptim.com/mac) to make batch optimisation of images part of your automated build process.
 - [MAMP](https://www.mamp.info/en/) for PHP / Wordpress development.
 - [Microsoft Edge Dev](https://developer.microsoft.com/en-us/microsoft-edge/) for testing.
 - [Spotify](https://www.spotify.com/) for music.
