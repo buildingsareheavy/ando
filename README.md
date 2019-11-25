@@ -112,6 +112,7 @@ The setup process will install:
 - [Gulp](https://gulpjs.com/) a task/build runner for development.
 - [ImageOptim-CLI](https://github.com/JamieMason/ImageOptim-CLI) to make batch optimisation of images part of your automated build process.
 - [Netlify](https://cli.netlify.com/) lets you deploy sites or configure continuous deployment straight from the command line.
+- [Mamp-CLI](https://www.npmjs.com/package/mamp-cli) A command line interface for working with [MAMP](https://www.mamp.info/de/). It can start and stop your MAMP, but also easily switch the document root so that you can switch projects easily by using a favorite list.
 - [Pa11y](https://pa11y.org/) a command-line interface which loads web pages and highlights any accessibility issues it finds. Useful for when you want to run a one-off test against a web page.
 - [VSCE](https://github.com/microsoft/vscode-vsce) - The Visual Studio Code Extension Manager.
 - [Vue-CLI](https://cli.vuejs.org/) for quickly scaffolding Single Page Applications.

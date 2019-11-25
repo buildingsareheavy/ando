@@ -5,6 +5,7 @@ gatsby-cli::gatsby
 gulp-cli::gulp
 imageoptim-cli::imageoptim-cli
 netlify-cli::netlify
+mamp-cli::mamp-cli
 pa11y::pa11y
 vsce::vsce
 @vue/cli::vue
