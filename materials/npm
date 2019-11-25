@@ -8,6 +8,5 @@ netlify-cli::netlify
 pa11y::pa11y
 vsce::vsce
 @vue/cli::vue
-wp-cli::wp
 yo::yo
  

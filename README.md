@@ -75,6 +75,7 @@ The setup process will install:
 - [ZSH](https://www.zsh.org/) is a UNIX shell (command interpreter).
 - [ZSH Syntax Highlighting](https://github.com/zsh-users/zsh-syntax-highlighting/) Fish shell like syntax highlighting for zsh.
 - [TheFuck](https://github.com/nvbn/thefuck/) helps programatically correct mistyped console commands.
+- [WP-CLI](https://wp-cli.org/) is the command-line interface for WordPress. You can update plugins, configure multisite installations and much more, without using a web browser.
   </details>
 
 <details>
@@ -114,7 +115,6 @@ The setup process will install:
 - [Pa11y](https://pa11y.org/) a command-line interface which loads web pages and highlights any accessibility issues it finds. Useful for when you want to run a one-off test against a web page.
 - [VSCE](https://github.com/microsoft/vscode-vsce) - The Visual Studio Code Extension Manager.
 - [Vue-CLI](https://cli.vuejs.org/) for quickly scaffolding Single Page Applications.
-- [WP-CLI](https://wp-cli.org/) is the command-line interface for WordPress. You can update plugins, configure multisite installations and much more, without using a web browser.
 - [yo](https://github.com/yeoman/yo) CLI tool for running [Yeoman](https://yeoman.io/) generators.
   </details>
 
