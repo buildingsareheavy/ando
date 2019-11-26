@@ -2,6 +2,10 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Connect WP-CLI to MAMP
+# Make sure the PHP version matches up with the MAMP PHP version
+# Reference: https://indigotree.co.uk/getting-wp-cli-work-mamp/
+export PATH="/Applications/MAMP/bin/php/php7.3.8/bin:$PATH"
+# Connect MAMP's local MySQL to the WP-CLI
 # Reference: https://stackoverflow.com/questions/44440064/env-mysql-no-such-file-or-directory-after-wp-import
 export PATH=$PATH:/Applications/MAMP/Library/bin/
 
