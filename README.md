@@ -81,6 +81,8 @@ The setup process will install:
 <details>
 <summary>Homebrew: Casks</summary>
 
+- [Affinity Photo Beta](https://affinity.serif.com/en-us/photo/) is a raster graphics editor.
+- [Affinity Designer Beta](https://affinity.serif.com/en-us/designer/) is a vector graphics editor.
 - [Firefox](https://www.mozilla.org/en-US/firefox/new/) for web browsing and testing.
 - [Firefox Developer Edition](https://www.mozilla.org/en-US/firefox/developer/) is my main web browser for development. Best CSS tools built in. Read more [here](https://www.smashingmagazine.com/2019/10/guide-new-experimental-css-devtools-firefox/).
 - [Google Chrome](https://www.google.com/chrome/browser/desktop/) for fast and free web browsing.
@@ -90,6 +92,7 @@ The setup process will install:
 - [Microsoft Edge Dev](https://developer.microsoft.com/en-us/microsoft-edge/) for testing.
 - [Spotify](https://www.spotify.com/) for music.
 - [Visual Studio Code](https://code.visualstudio.com/) IDE.
+- [Zoom](https://zoom.us/) for video conferencing.
 - [FONT: Dejavu Sans Mono](https://github.com/Homebrew/homebrew-cask-fonts/blob/master/Casks/font-dejavusansmono-nerd-font-mono.rb) for command-line font. Has glyph support for `git` and works well with [PowerLevel10K](https://github.com/romkatv/powerlevel10k) (a ZSH theme).
 - [FONT: Victor Mono](https://github.com/Homebrew/homebrew-cask-fonts/blob/master/Casks/font-victor-mono.rb) for text editor font. Supports ligatures and has a nice cursive italic font, similar to [Dank Mono](https://dank.sh/) or [Fira Code](https://github.com/tonsky/FiraCode).
   </details>
