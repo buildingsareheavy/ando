@@ -111,7 +111,10 @@ alias showFiles='defaults write com.apple.finder AppleShowAllFiles YES; killall 
 alias hideFiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
 
 # fix Hyper first line precent sign
-unsetopt PROMPT_SP
+setopt PROMPT_CR
+setopt PROMPT_SP
+export PROMPT_EOL_MARK=""
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 source ~/powerlevel10k/powerlevel10k.zsh-theme
+

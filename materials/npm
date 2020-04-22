@@ -3,7 +3,6 @@ eslint::eslint
 gatsby-cli::gatsby
 @gridsome/cli::gridsome
 gulp-cli::gulp
-imageoptim-cli::imageoptim-cli
 netlify-cli::netlify
 mamp-cli::mamp-cli
 pa11y::pa11y
