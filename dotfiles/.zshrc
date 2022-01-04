@@ -118,3 +118,6 @@ export PROMPT_EOL_MARK=""
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 source ~/powerlevel10k/powerlevel10k.zsh-theme
 
+# add path for WordPress Plugin Boilerplate Powered generator
+# https://github.com/WPBP/generator
+export PATH=~/.composer/vendor/bin:$PATH
