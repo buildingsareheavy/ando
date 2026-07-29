@@ -1,12 +1,2 @@
-@11ty/eleventy::eleventy
-eslint::eslint
-gatsby-cli::gatsby
-@gridsome/cli::gridsome
-gulp-cli::gulp
-netlify-cli::netlify
-mamp-cli::mamp-cli
-pa11y::pa11y
-vsce::vsce
-@vue/cli::vue
-yo::yo
- 
+pnpm::pnpm
+@axe-core/cli::axe-cli
