@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+# This file configures the macOS settings.
+# Safe to run multiple times.
+# Some changes require Finder, Dock, or SystemUIServer to be restarted.
+
+###############################################################################
+# FINDER
+###############################################################################
+# Show hidden files
+# Finder > View > Show Hidden Files
+defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Show all filename extensions
+# Finder > Settings > Advanced > Show all filename extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Show path bar at bottom of Finder windows
+# Finder > View > Show Path Bar
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Show status bar
+# Finder > View > Show Status Bar
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Open new Finder windows in Home folder instead of Recents
+defaults write com.apple.finder NewWindowTarget -string "PfHm"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+
+###############################################################################
+# DOCK
+###############################################################################
+# Automatically hide and show the Dock
+defaults write com.apple.dock autohide -bool true
+
+# Remove Dock autohide delay
+defaults write com.apple.dock autohide-delay -float 0
+
+# Speed up Dock hide/show animation
+defaults write com.apple.dock autohide-time-modifier -float 0.2
+
+# Minimize windows using Scale Effect
+# Desktop & Dock > Minimize windows using: Scale Effect
+defaults write com.apple.dock mineffect -string "scale"
+
+
+###############################################################################
+# TRACKPAD / MOUSE
+###############################################################################
+# Natural scrolling ON
+# Trackpad > Scroll & Zoom > Natural scrolling
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Tap to click OFF
+# Trackpad > Point & Click > Tap to click
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool false
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 0
+
+# Secondary click OFF
+# Trackpad > Point & Click > Secondary click
+defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool false
+
+###############################################################################
+# HOT CORNERS
+###############################################################################
+# Disable all hot corners
+defaults write com.apple.dock wvous-tl-corner -int 1
+defaults write com.apple.dock wvous-tr-corner -int 1
+defaults write com.apple.dock wvous-bl-corner -int 1
+defaults write com.apple.dock wvous-br-corner -int 1
+
+###############################################################################
+# SCREENSHOTS
+###############################################################################
+# Create screenshot folder
+mkdir -p "${HOME}/Pictures/Screenshots"
+
+# Save screenshots to ~/Pictures/Screenshots
+defaults write com.apple.screencapture location "${HOME}/Pictures/Screenshots"
+
+###############################################################################
+# NOTES FOR MANUAL CONFIGURATIONS
+###############################################################################
+# System Settings > Desktop & Dock > Mission Control
+# Mission Control > Mouse Button 3
+
+# Downloads & Documents directories on right side of dock
+# Display as: Stack
+# View Content as: List
+
+###############################################################################
+# APPLY CHANGES
+###############################################################################
+killall Finder 2>/dev/null
+killall Dock 2>/dev/null
+killall SystemUIServer 2>/dev/null
+
+echo "macOS defaults applied."

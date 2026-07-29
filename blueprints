@@ -426,15 +426,6 @@ symlink_dotfiles() {
   done
 }
 
-install_ohmyzsh() {
-    # Install Oh My ZSH (unattended)
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
-    # Install Powerlevel10K theme into Oh My ZSH custom themes
-    git clone https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
-    # Alias Powerlevel10K folder into $HOME directory
-    ln -s $HOME/.oh-my-zsh/custom/themes/powerlevel10k $HOME/ 
-}
-
 
 ###############################################################################
 # Prompts
@@ -551,15 +542,6 @@ mas_setup() {
     fi
 }
 
-gem_install_or_update() {
-    if gem list "$1" --installed > /dev/null; then
-        gem update "$@"
-    else
-        gem install "$@"
-        rbenv rehash
-    fi
-}
-
 install_brews() {
     if test ! $(brew list | grep $brew); then
         echo_install "Installing $brew"
@@ -569,16 +551,6 @@ install_brews() {
 		print_success_muted "$brew already installed. Skipped."
     fi
 }
-
-# install_brew_taps() {
-#     if test ! $(brew tap | grep $tap); then
-#         echo_install "Installing $tap"
-# 		brew install $tap >/dev/null
-# 		print_in_green "${bold}✓ installed!${normal}\n"
-# 	else
-# 		print_success_muted "$brew already installed. Skipped."
-#     fi
-# }
 
 install_application_via_brew() {
     if [[ ! $(brew list --cask | grep $cask) ]]; then
@@ -608,13 +580,6 @@ install_npm_packages() {
 	else
 		print_success_muted "$1 already installed. Skipped."
 	fi
-}
-
-# The releases are returned in the format
-# {"id":3622206,"tag_name":"hello-1.0.0.11",…}
-# we have to extract the tag_name.
-get_github_version() {
-    echo $1 | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/'
 }
 
 ###############################################################################
