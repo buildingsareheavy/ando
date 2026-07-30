@@ -21,12 +21,6 @@ else
 fi
 
 ###############################################################################
-# CHECK: Bash version
-###############################################################################
-
-check_bash_version
-
-###############################################################################
 # Go Ando Go!          https://www.ascii-art-generator.org/ ( font: Slant )
 ###############################################################################
 
@@ -43,7 +37,7 @@ printf "
 │  It ${green}installs${reset}, ${blue}upgrades${reset}, or ${yellow}skips${reset} packages based   │
 │  on what is already installed on the machine.     │
 ╰───────────────────────────────────────────────────╯
-   ${dim}$(get_os) $(get_os_version) ${normal} // ${dim}$BASH ${normal} // ${dim}$BASH_VERSION${reset}
+   ${dim}$(check_macos)${reset}
 "
 
 ###############################################################################
