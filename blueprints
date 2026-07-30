@@ -301,20 +301,6 @@ ask() {
     done
 }
 
-###############################################################################
-# 
-###############################################################################
-
-# return 1 if global command line program installed, else 0
-cli_is_installed() {
-    # set to 1 initially
-    local return_=1
-    # set to 0 if not found
-    type $1 >/dev/null 2>&1 || { local return_=0; }
-    # return value
-    echo "$return_"
-}
-
 
 ###############################################################################
 # SSH KEY SETUP
@@ -381,62 +367,133 @@ ssh_setup_keygen() {
 	fi
 
 	open "https://github.com/settings/keys" 2>/dev/null || true
-	read -r -p "   Add it to GitHub, then press enter to continue… " </dev/tty
+	read -r -p "   Add it to GitHub, then press enter to continue..." </dev/tty
 	print_success "SSH key added"
 }
 
 ###############################################################################
-# INSTALL APPS
+# MATERIALS FILE READER
+# Reads a file inside /materials, ignoring blank lines and comments
 ###############################################################################
 
+read_materials_file() {
+	local file="$1" line
 
-mas_setup() {
-    if mas account > /dev/null; then
-        return 0
-    else
-        return 1
-    fi
+	[ -f "$file" ] || return 0
+
+	while IFS= read -r line || [ -n "$line" ]; do
+		line="${line#"${line%%[![:space:]]*}"}"   # trim leading whitespace
+		line="${line%"${line##*[![:space:]]}"}"   # trim trailing whitespace
+
+		[ -z "$line" ] && continue
+		[[ "$line" == \#* ]] && continue
+
+		printf "%s\n" "$line"
+	done < "$file"
 }
 
-install_brews() {
-    if test ! $(brew list | grep $brew); then
-        echo_install "Installing $brew"
-		brew install $brew >/dev/null
-		print_in_green "${bold}✓ installed!${normal}\n"
-	else
-		print_success_muted "$brew already installed. Skipped."
-    fi
-}
 
-install_application_via_brew() {
-    if [[ ! $(brew list --cask | grep $cask) ]]; then
-        echo_install "Installing $cask"
-        brew install --cask $cask --appdir=/Applications >/dev/null
-        print_in_green "${bold}✓ installed!${normal}\n"
-    else
-    	print_success_muted "$cask already installed. Skipped."
-    fi
-}
+###############################################################################
+# INSTALLERS
+###############################################################################
 
-install_application_via_app_store() {
-	if ! mas list | grep $1 &> /dev/null; then
-		echo_install "Installing $2"
-		mas install $1 >/dev/null
-		print_in_green "${bold}✓ installed!${normal}\n"
-	else
-		print_success_muted "$2 already installed. Skipped."
+install_brew_formula() {
+	local formula="$1"
+
+	if brew list --formula 2>/dev/null | grep -qx "$formula"; then
+		print_success_muted "$formula already installed. Skipped."
+		return 0
 	fi
+
+	echo_install "Installing $formula"
+	brew install "$formula" &>/dev/null
+	print_success "$formula installed!"
 }
 
-install_npm_packages() {
-	if [[ $(cli_is_installed $2) == 0 ]]; then
-		echo_install "Installing $1"
-		npm install $1 -g --silent
-		print_in_green "${bold}✓ installed!${normal}\n"
-	else
-		print_success_muted "$1 already installed. Skipped."
+install_brew_tap() {
+	local tap="$1"
+
+	if brew tap 2>/dev/null | grep -qx "$tap"; then
+		print_success_muted "$tap already tapped. Skipped."
+		return 0
 	fi
+
+	echo_install "Tapping $tap"
+	brew tap "$tap" &>/dev/null
+	print_success "$tap tapped!"
 }
+
+install_brew_cask() {
+	local cask="$1"
+
+	if brew list --cask 2>/dev/null | grep -qx "$cask"; then
+		print_success_muted "$cask already installed. Skipped."
+		return 0
+	fi
+
+	echo_install "Installing $cask"
+	brew install --cask "$cask" --appdir=/Applications &>/dev/null
+	print_success "$cask installed!"
+}
+
+install_app_store_app() {
+	# entry format: "id::name"
+	local entry="$1"
+	local id="${entry%%::*}"
+	local name="${entry##*::}"
+
+	if ! command -v mas &>/dev/null; then
+		print_warning "mas is not installed — add it to brew-formulae and re-run."
+		return 1
+	fi
+
+	if ! mas account &>/dev/null; then
+		print_warning "Please sign in to the App Store first. Skipping."
+		return 1
+	fi
+
+	if mas list 2>/dev/null | grep -q "^$id "; then
+		print_success_muted "$name already installed. Skipped."
+		return 0
+	fi
+
+	echo_install "Installing $name"
+	mas install "$id" &>/dev/null
+	print_success "$name installed!"
+}
+
+install_npm_package() {
+	# entry format: "package" or "package::command"
+	local entry="$1"
+	local package="${entry%%::*}"
+	local cmd="${entry##*::}"
+
+	if command -v "$cmd" &>/dev/null; then
+		print_success_muted "$package already installed. Skipped."
+		return 0
+	fi
+
+	echo_install "Installing $package"
+	npm install -g "$package" --silent
+	print_success "$package installed!"
+}
+
+install_pipx_package() {
+	# entry format: "package" or "package::command"
+	local entry="$1"
+	local package="${entry%%::*}"
+	local cmd="${entry##*::}"
+
+	if command -v "$cmd" &>/dev/null; then
+		print_success_muted "$package already installed. Skipped."
+		return 0
+	fi
+
+	echo_install "Installing $package"
+	pipx install "$package" &>/dev/null
+	print_success "$package installed!"
+}
+
 
 ###############################################################################
 # Text Formatting

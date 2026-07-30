@@ -43,25 +43,25 @@ printf "
 ###############################################################################
 # CHECK: Internet
 ###############################################################################
-chapter "Checking internet connection…"
+chapter "Checking internet connection..."
 check_internet_connection
 
 ###############################################################################
 # PROMPT: Password
 ###############################################################################
-chapter "Caching password…"
+chapter "Caching password..."
 ask_for_sudo
 
 ###############################################################################
 # PROMPT: SSH Key
 ###############################################################################
-chapter 'Checking for SSH key…'
+chapter 'Checking for SSH key...'
 ssh_key_setup
 
 ###############################################################################
 # INSTALL: Dependencies
 ###############################################################################
-chapter "Installing Dependencies…"
+chapter "Installing Dependencies..."
 
 # -----------------------------------------------------------------------------
 # XCode
@@ -70,7 +70,7 @@ if type xcode-select >&- && xpath=$( xcode-select --print-path ) &&
 	test -d "${xpath}" && test -x "${xpath}" ; then
 	print_success_muted "Xcode already installed. Skipping."
 else
-	step "Installing Xcode…"
+	step "Installing Xcode..."
 	xcode-select --install
 	print_success "Xcode installed!"
 fi
@@ -85,7 +85,7 @@ fi
 if [ -d "$HOME/.bash_it" ]; then
 	print_success_muted "Bash-it already installed. Skipping."
 else
-	step "Installing Bash-it…"
+	step "Installing Bash-it..."
 	git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
 	~/.bash_it/install.sh --silent --no-modify-config
 	print_success "Bash-it installed!"
@@ -96,10 +96,10 @@ fi
 # NVM
 # -----------------------------------------------------------------------------
 if [ -x nvm ]; then
-	step "Installing NVM…"
+	step "Installing NVM..."
 	curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
 	print_success "NVM installed!"
-	step "Installing latest Node…"
+	step "Installing latest Node..."
 	nvm install node
 	nvm use node
 	nvm run node --version
@@ -113,7 +113,7 @@ fi
 # Homebrew
 # -----------------------------------------------------------------------------
 if ! [ -x "$(command -v brew)" ]; then
-	step "Installing Homebrew…"
+	step "Installing Homebrew..."
 	curl -fsS 'https://raw.githubusercontent.com/Homebrew/install/master/install' | ruby
 	export PATH="/usr/local/bin:$PATH"
 	print_success "Homebrew installed!"
@@ -122,126 +122,141 @@ else
 fi
 
 if brew list | grep -Fq brew-cask; then
-	step "Uninstalling old Homebrew-Cask…"
+	step "Uninstalling old Homebrew-Cask..."
 	brew uninstall --force brew-cask
 	print_success "Homebrew-Cask uninstalled!"
 fi
 
 ###############################################################################
-# INSTALL: brews
+# INSTALL: formulae
 ###############################################################################
-if [ -e $cwd/materials/brews ]; then
-	chapter "Installing Homebrew formulae…"
+if [ -e $cwd/materials/brew-formulae ]; then
+	chapter "Installing Homebrew formulae..."
 
-	for brew in $(<$cwd/materials/brews); do
-		install_brews $brew
-	done
+	while IFS= read -r formula; do
+		install_brew_formula "$formula"
+	done < <(read_materials_file "$cwd/materials/brew-formulae")
 fi
 
-
-# NOTE: this should exist, but with a fallback if blank, like everything
 ###############################################################################
-# INSTALL: taps
+# INSTALL: casks
 ###############################################################################
-# if [ -e $cwd/materials/taps ]; then
-# 	chapter "Installing Homebrew taps…"
+if [ -e $cwd/materials/brew-casks ]; then
+	chapter "Installing apps via Homebrew..."
 
-# 	for brew in $(<$cwd/materials/taps); do
-# 		install_brew_taps $tap
-# 	done
-# fi
+	while IFS= read -r cask; do
+		install_brew_cask "$cask"
+	done < <(read_materials_file "$cwd/materials/brew-casks")
+fi
 
+###############################################################################
+# INSTALL: brew taps
+###############################################################################
+if [ -e $cwd/materials/brew-taps ]; then
+	chapter "Installing Homebrew taps..."
 
+	while IFS= read -r tap; do
+		install_brew_tap "$tap"
+	done < <(read_materials_file "$cwd/materials/brew-taps")
+fi
 
 
 ###############################################################################
 # UPDATE: Homebrew
 ###############################################################################
-chapter "Updating Homebrew formulae…"
+chapter "Updating Homebrew formulae..."
 brew update
 
-###############################################################################
-# INSTALL: casks
-###############################################################################
-if [ -e $cwd/materials/casks ]; then
-	chapter "Installing apps via Homebrew…"
-
-	for cask in $(<$cwd/materials/casks); do
-	    install_application_via_brew $cask
-	done
-fi
 
 ###############################################################################
 # INSTALL: Mac App Store Apps
 ###############################################################################
-chapter "Installing apps from App Store…"
-if [ -x mas ]; then
+# chapter "Installing apps from App Store..."
+# if [ -x mas ]; then
 
-	print_warning "Please install mas-cli first: brew mas. Skipping."
+# 	print_warning "Please install mas-cli first: brew mas. Skipping."
 
-	else
+# 	else
 
-	if [ -e $cwd/materials/apps ]; then
-		if mas_setup; then
-			# Workaround for associative array in Bash 3
-			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
-			for app in $(<$cwd/materials/apps); do
-				KEY="${app%%::*}"
-				VALUE="${app##*::}"
-				install_application_via_app_store $KEY $VALUE
-			done
-		else
-			print_warning "Please signin to App Store first. Skipping."
-		fi
-	fi
+# 	if [ -e $cwd/materials/apps ]; then
+# 		if mas_setup; then
+# 			# Workaround for associative array in Bash 3
+# 			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
+# 			for app in $(<$cwd/materials/apps); do
+# 				KEY="${app%%::*}"
+# 				VALUE="${app##*::}"
+# 				install_application_via_app_store $KEY $VALUE
+# 			done
+# 		else
+# 			print_warning "Please signin to App Store first. Skipping."
+# 		fi
+# 	fi
 
+# fi
+
+if [ -e $cwd/materials/app-store ]; then
+	chapter "Installing apps from the App Store..."
+
+	while IFS= read -r app; do
+		install_app_store_app "$app"
+	done < <(read_materials_file "$cwd/materials/app-store")
 fi
 
 ###############################################################################
 # CLEAN: Homebrew files
 ###############################################################################
-chapter "Cleaning up Homebrew files…"
+chapter "Cleaning up Homebrew files..."
 brew cleanup 2> /dev/null
 
 ###############################################################################
 # INSTALL: npm packages
 ###############################################################################
-if [ -e $cwd/materials/npm ]; then
-	chapter "Installing npm packages…"
+# if [ -e $cwd/materials/npm ]; then
+# 	chapter "Installing npm packages..."
 
-	for pkg in $(<$cwd/materials/npm); do
-		KEY="${pkg%%::*}"
-		VALUE="${pkg##*::}"
-		install_npm_packages $KEY $VALUE
-	done
+# 	for pkg in $(<$cwd/materials/npm); do
+# 		KEY="${pkg%%::*}"
+# 		VALUE="${pkg##*::}"
+# 		install_npm_packages $KEY $VALUE
+# 	done
+# fi
+
+if [ -e $cwd/materials/npm-packages ]; then
+	chapter "Installing npm packages..."
+
+	while IFS= read -r pkg; do
+		install_npm_package "$pkg"
+	done < <(read_materials_file "$cwd/materials/npm-packages")
 fi
 
+###############################################################################
+# INSTALL: pipx packages
+###############################################################################
+if [ -e $cwd/materials/pipx-packages ]; then
+	chapter "Installing pipx packages..."
 
-# NOTE: this can be removed later. No more OMZ
-###############################################################################
-# Install: Oh My ZSH
-###############################################################################
-chapter "Initial ZSH Setup…"
-if [ -e $cwd/materials/dotfiles ]; then
-	
-		if ask "Do you want to install Oh-My-ZSH! and Powerlevel10K theme for the first time?" Y; then
-			install_ohmyzsh;
-			echo "\n";
-			print_success "Installation complete.";
-	
-	else
-		print_success_muted "Installation was declined. Skipped.";
-	fi
-else
-	print_warning "Something went wrong. Skipping."
+	while IFS= read -r pkg; do
+		install_pipx_package "$pkg"
+	done < <(read_materials_file "$cwd/materials/pipx-packages")
 fi
 
+###############################################################################
+# MANUAL INSTALL: reference-only reminders
+###############################################################################
+if [ -e $cwd/materials/manual-install ]; then
+	chapter "Manual installs..."
+	print_muted "Ando asks that you install these yourself later:"
+
+	while IFS= read -r item; do
+		print_muted "  • $item"
+	done < <(read_materials_file "$cwd/materials/manual-install")
+fi
 
 # NOTE: this will be handled with GNU Stow
 ###############################################################################
 # LINK: dotfiles
 ###############################################################################
-chapter "Linking dotfiles…"
+chapter "Linking dotfiles..."
 if [ -e $cwd/materials/dotfiles ]; then
 	
 		if ask "Last Step. Do you want to link the dotfiles?" Y; then
