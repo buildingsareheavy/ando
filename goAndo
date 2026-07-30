@@ -97,6 +97,7 @@ else
 	print_success "Bash-it installed!"
 fi
 
+# NOTE: replace, and move to Brew instead
 # -----------------------------------------------------------------------------
 # NVM
 # -----------------------------------------------------------------------------
@@ -144,6 +145,7 @@ if [ -e $cwd/materials/brews ]; then
 fi
 
 
+# NOTE: this should exist, but with a fallback if blank, like everything
 ###############################################################################
 # INSTALL: taps
 ###############################################################################
@@ -221,6 +223,7 @@ if [ -e $cwd/materials/npm ]; then
 fi
 
 
+# NOTE: this can be removed later. No more OMZ
 ###############################################################################
 # Install: Oh My ZSH
 ###############################################################################
@@ -239,6 +242,8 @@ else
 	print_warning "Something went wrong. Skipping."
 fi
 
+
+# NOTE: this will be handled with GNU Stow
 ###############################################################################
 # LINK: dotfiles
 ###############################################################################
