@@ -4,26 +4,22 @@
 # VARIABLES
 ###############################################################################
 
-count=1
-
-reset="\033[0m"
-highlight="\033[41m\033[97m"
-dot="\033[31m▸ $reset"
-dim="\033[2m"
-blue="\e[34m"
-green="\e[32m"
-yellow="\e[33m"
-tag_green="\e[30;42m"
-tag_blue="\e[30;46m"
-bold=$(tput bold)
-normal=$(tput sgr0)
-underline="\e[37;4m"
-indent="   "
-
-# Get full directory name of this script
 cwd="$(cd "$(dirname "$0")" && pwd)"
+count=1
+DRY_RUN=${DRY_RUN:-false}
 
-DOTFILES_ROOT=$cwd/dotfiles
+bold=$(tput bold 2>/dev/null)
+normal=$(tput sgr0 2>/dev/null)
+reset="$normal"
+dim=$(tput dim 2>/dev/null)
+underline=$(tput smul 2>/dev/null)
+
+color_red=$(tput setaf 1 2>/dev/null)
+color_green=$(tput setaf 2 2>/dev/null)
+color_yellow=$(tput setaf 3 2>/dev/null)
+color_blue=$(tput setaf 4 2>/dev/null)
+
+dot="${color_red}▸${reset} "
 
 ###############################################################################
 # Utility Functions
