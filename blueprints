@@ -255,12 +255,12 @@ get_os_version() {
 }
 
 check_internet_connection() {
-    if [ ping -q -w1 -c1 google.com &>/dev/null ]; then
-        print_error "Please check your internet connection";
-        exit 0
-    else
-        print_success "Internet connection";
-    fi
+	if ping -q -W1 -c1 google.com &>/dev/null; then
+		print_success "Internet connection"
+	else
+		print_error "Please check your internet connection"
+		exit 1
+	fi
 }
 
 ###############################################################################
