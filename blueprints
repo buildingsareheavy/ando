@@ -315,40 +315,80 @@ cli_is_installed() {
     echo "$return_"
 }
 
-copy_key_github() {
-    inform 'Public key copied! Paste into Github…'
-    [[ -f $pub ]] && cat $pub | pbcopy
-    open 'https://github.com/account/ssh'
-    read -p "   ✦  Press enter to continue…"
-    print_success "SSH key"
-    return
-}
 
-github_key_check() {
-	if ask "SSH key found. Enter it in Github?" Y; then
-		copy_key_github;
-	else
-		print_success "SSH key";
-	fi
-}
-
-create_ssh_key() {
-	if ask "No SSH key found. Create one?" Y; then
-		ssh-keygen -t rsa; github_key_check;
-	else
-		return 0;
-	fi
-}
+###############################################################################
+# SSH KEY SETUP
+###############################################################################
 
 ssh_key_setup() {
-    local pub=$HOME/.ssh/id_rsa.pub
+	local pub="$HOME/.ssh/id_ed25519.pub"
 
-    if ! [[ -f $pub ]]; then
-        create_ssh_key
-    else
-        github_key_check
-    fi
+	if [ -f "$pub" ]; then
+		print_success_muted "SSH key already exists. Skipping."
+		return 0
+	fi
+
+	print_question "How do you want to set up SSH access to GitHub?"
+	echo "     1) 1Password SSH agent"
+	echo "     2) gh auth login (GitHub CLI)"
+	echo "     3) ssh-keygen (ed25519, manual)"
+	echo "     4) Skip for now"
+
+	local choice
+	read -r -p "  Choice [1-4]: " choice </dev/tty
+
+	case "$choice" in
+		1) ssh_setup_1password ;;
+		2) ssh_setup_gh ;;
+		3) ssh_setup_keygen ;;
+		*) print_muted "Skipping SSH setup." ;;
+	esac
 }
+
+ssh_setup_1password() {
+	print_muted "In 1Password: Settings > Developer > enable the SSH agent, then create/import a key."
+	print_muted "Add to ~/.ssh/config:"
+	print_muted "  Host *"
+	print_muted "    IdentityAgent \"~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock\""
+	print_success "1Password SSH agent instructions shown"
+}
+
+ssh_setup_gh() {
+	if ! command -v gh &>/dev/null; then
+		print_warning "gh is not installed — add it to brew-formulae and re-run."
+		return 1
+	fi
+
+	if [ "$DRY_RUN" == "true" ]; then
+		print_dry_run "gh auth login"
+	else
+		gh auth login
+		print_success "GitHub CLI authenticated"
+	fi
+}
+
+ssh_setup_keygen() {
+	if [ "$DRY_RUN" == "true" ]; then
+		print_dry_run "ssh-keygen -t ed25519"
+		return 0
+	fi
+
+	ssh-keygen -t ed25519
+
+	if command -v pbcopy &>/dev/null; then
+		pbcopy < "$HOME/.ssh/id_ed25519.pub"
+		print_muted "Public key copied to clipboard."
+	fi
+
+	open "https://github.com/settings/keys" 2>/dev/null || true
+	read -r -p "   Add it to GitHub, then press enter to continue… " </dev/tty
+	print_success "SSH key added"
+}
+
+###############################################################################
+# INSTALL APPS
+###############################################################################
+
 
 mas_setup() {
     if mas account > /dev/null; then
