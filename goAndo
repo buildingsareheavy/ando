@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ###############################################################################
-# ERROR HANDLING
+# Error Handling
 ###############################################################################
 
 handle_exit() {
@@ -23,6 +23,7 @@ handle_interrupt() {
 trap handle_exit EXIT
 trap handle_interrupt INT TERM
 
+
 ###############################################################################
 # BLUEPRINTS: Check for required functions file
 ###############################################################################
@@ -36,15 +37,19 @@ else
 	exit 1
 fi
 
+
 ###############################################################################
 # LOG: Every run is saved to ~/ando.log
 ###############################################################################
+
 LOG_FILE="$HOME/ando.log"
 exec > >(tee "$LOG_FILE") 2>&1
+
 
 ###############################################################################
 # STATE: Track failures to report at the end instead of aborting immediately
 ###############################################################################
+
 FAILED_ITEMS=()
 
 track_failure() {
@@ -55,9 +60,12 @@ track_failure() {
 	fi
 }
 
+
 ###############################################################################
 # Go Ando Go!          https://www.ascii-art-generator.org/ ( font: Slant )
 ###############################################################################
+   
+check_macos
 
 printf "       
 
@@ -72,64 +80,51 @@ printf "
 │  It ${green}installs${reset}, ${blue}upgrades${reset}, or ${yellow}skips${reset} packages based   │
 │  on what is already installed on the machine.     │
 ╰───────────────────────────────────────────────────╯
-   ${dim}$(check_macos)${reset}
 "
 
 if [ "$DRY_RUN" == "true" ]; then
 	printf "  ${color_yellow}[using dry-run mode. Ando will not install or change anything]${reset}\n"
 fi
 
+
 ###############################################################################
 # CHECK: Internet
 ###############################################################################
+
 chapter "Checking internet connection..."
 check_internet_connection
+
 
 ###############################################################################
 # PROMPT: Password
 ###############################################################################
+
 chapter "Caching password..."
 ask_for_sudo
+
 
 ###############################################################################
 # PROMPT: SSH Key
 ###############################################################################
+
 chapter 'Checking for SSH key...'
 ssh_key_setup || true
+
 
 ###############################################################################
 # INSTALL: Prerequisites
 ###############################################################################
+
 chapter "Installing prerequisites..."
 track_failure "Xcode Command Line Tools" check_xcode_clt
 track_failure "Homebrew" check_homebrew
 
-###############################################################################
-# INSTALL: formulae
-###############################################################################
-if [ -e $cwd/materials/brew-formulae ]; then
-	chapter "Installing Homebrew formulae..."
-
-	while IFS= read -r formula; do
-		track_failure "brew formula: $formula" install_brew_formula "$formula"
-	done < <(read_materials_file "$cwd/materials/brew-formulae")
-fi
 
 ###############################################################################
-# INSTALL: casks
+# INSTALL: Brew Taps
 ###############################################################################
-if [ -e $cwd/materials/brew-casks ]; then
-	chapter "Installing apps via Homebrew..."
 
-	while IFS= read -r cask; do
-		track_failure "brew cask: $cask" install_brew_cask "$cask"
-	done < <(read_materials_file "$cwd/materials/brew-casks")
-fi
-
-###############################################################################
-# INSTALL: brew taps
-###############################################################################
-if [ -e $cwd/materials/brew-taps ]; then
+if [ -e "$cwd/materials/brew-taps" ]; then
 	chapter "Installing Homebrew taps..."
 
 	while IFS= read -r tap; do
@@ -141,14 +136,50 @@ fi
 ###############################################################################
 # UPDATE: Homebrew
 ###############################################################################
-chapter "Updating Homebrew formulae..."
-brew update
+
+chapter "Updating Homebrew..."
+track_failure "brew update" brew update
+
+
+###############################################################################
+# INSTALL: Brew Formulae
+###############################################################################
+
+if [ -e "$cwd/materials/brew-formulae" ]; then
+	chapter "Installing Homebrew formulae..."
+
+	while IFS= read -r formula; do
+		track_failure "brew formula: $formula" install_brew_formula "$formula"
+	done < <(read_materials_file "$cwd/materials/brew-formulae")
+fi
+
+
+###############################################################################
+# INSTALL: Brew Casks
+###############################################################################
+
+if [ -e "$cwd/materials/brew-casks" ]; then
+	chapter "Installing apps via Homebrew..."
+
+	while IFS= read -r cask; do
+		track_failure "brew cask: $cask" install_brew_cask "$cask"
+	done < <(read_materials_file "$cwd/materials/brew-casks")
+fi
+
+
+###############################################################################
+# CLEAN: Homebrew Files
+###############################################################################
+
+chapter "Cleaning up Homebrew files..."
+track_failure "brew cleanup" brew cleanup
 
 
 ###############################################################################
 # INSTALL: Mac App Store Apps
 ###############################################################################
-if [ -e $cwd/materials/app-store ]; then
+
+if [ -e "$cwd/materials/app-store" ]; then
 	chapter "Installing apps from the App Store..."
 
 	while IFS= read -r app; do
@@ -156,16 +187,12 @@ if [ -e $cwd/materials/app-store ]; then
 	done < <(read_materials_file "$cwd/materials/app-store")
 fi
 
-###############################################################################
-# CLEAN: Homebrew files
-###############################################################################
-chapter "Cleaning up Homebrew files..."
-brew cleanup 2> /dev/null
 
 ###############################################################################
-# INSTALL: npm packages
+# INSTALL: npm Packages
 ###############################################################################
-if [ -e $cwd/materials/npm-packages ]; then
+
+if [ -e "$cwd/materials/npm-packages" ]; then
 	chapter "Installing npm packages..."
 
 	while IFS= read -r pkg; do
@@ -173,10 +200,12 @@ if [ -e $cwd/materials/npm-packages ]; then
 	done < <(read_materials_file "$cwd/materials/npm-packages")
 fi
 
+
 ###############################################################################
-# INSTALL: pipx packages
+# INSTALL: pipx Packages
 ###############################################################################
-if [ -e $cwd/materials/pipx-packages ]; then
+
+if [ -e "$cwd/materials/pipx-packages" ]; then
 	chapter "Installing pipx packages..."
 
 	while IFS= read -r pkg; do
@@ -184,10 +213,12 @@ if [ -e $cwd/materials/pipx-packages ]; then
 	done < <(read_materials_file "$cwd/materials/pipx-packages")
 fi
 
+
 ###############################################################################
-# MANUAL INSTALL: reference-only reminders
+# MANUAL INSTALL: Reference-Only Reminders
 ###############################################################################
-if [ -e $cwd/materials/manual-install ]; then
+
+if [ -e "$cwd/materials/manual-install" ]; then
 	chapter "Manual installs..."
 	print_muted "Ando asks that you install these yourself later:"
 
@@ -196,21 +227,27 @@ if [ -e $cwd/materials/manual-install ]; then
 	done < <(read_materials_file "$cwd/materials/manual-install")
 fi
 
+
 ###############################################################################
-# DOTFILES
+# Dotfiles
 ###############################################################################
+
 chapter "Setting up dotfiles..."
 track_failure "dotfiles" setup_dotfiles
 
-###############################################################################
-# MACOS SETTINGS
-###############################################################################
-chapter "macOS settings..."
-apply_macos_settings
 
 ###############################################################################
-# SUMMARY
+# MacOS Settings
 ###############################################################################
+
+chapter "Updating macOS settings..."
+track_failure "macOS settings" apply_macos_settings
+
+
+###############################################################################
+# Summary
+###############################################################################
+
 chapter "Summary"
 
 if [ "${#FAILED_ITEMS[@]}" -eq 0 ]; then
@@ -224,7 +261,9 @@ fi
 
 print_muted "Full log saved to $LOG_FILE"
 
+
 ###############################################################################
-# END
+# End
 ###############################################################################
+
 e_all_finished
