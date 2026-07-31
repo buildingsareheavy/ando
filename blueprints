@@ -223,6 +223,47 @@ check_internet_connection() {
 }
 
 ###############################################################################
+# Prerequisite Checks
+###############################################################################
+
+check_xcode_clt() {
+	local clt_path
+
+	if clt_path=$(xcode-select --print-path 2>/dev/null) && [ -d "$clt_path" ]; then
+		print_success_muted "Xcode Command Line Tools already installed. Skipping."
+		return 0
+	fi
+
+	step "Installing Xcode Command Line Tools..."
+
+	xcode-select --install 2>/dev/null || true
+
+	if clt_path=$(xcode-select --print-path 2>/dev/null) && [ -d "$clt_path" ]; then
+		print_success "Xcode Command Line Tools installed!"
+		return 0
+	fi
+
+	print_muted "Complete the installation in the dialog that opened, then rerun Ando."
+	return 1
+}
+
+check_homebrew() {
+	if command -v brew >/dev/null 2>&1; then
+		print_success_muted "Homebrew already installed. Skipping."
+		return 0
+	fi
+
+	step "Installing Homebrew..."
+
+	if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+		print_success "Homebrew installed!"
+	else
+		print_error "Homebrew failed to install"
+		return 1
+	fi
+}
+
+###############################################################################
 # Dotfiles
 ###############################################################################
 setup_dotfiles() {
