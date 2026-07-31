@@ -134,6 +134,22 @@ _link_file() {
   fi
 }
 
+print_dry_run() {
+    printf "  ${dim}[dry-run] would run: $1${reset}\n"
+}
+
+run_step() {
+	local description="$1"; shift
+	[ "$1" == "--" ] && shift
+
+	if [ "$DRY_RUN" == "true" ]; then
+		print_dry_run "$description"
+		return 0
+	fi
+
+	"$@" &>/dev/null
+}
+
 ###############################################################################
 # Print Functions
 ###############################################################################
@@ -236,6 +252,11 @@ check_xcode_clt() {
 
 	step "Installing Xcode Command Line Tools..."
 
+	if [ "$DRY_RUN" == "true" ]; then
+		print_dry_run "xcode-select --install"
+		return 0
+	fi
+
 	xcode-select --install 2>/dev/null || true
 
 	if clt_path=$(xcode-select --print-path 2>/dev/null) && [ -d "$clt_path" ]; then
@@ -255,7 +276,7 @@ check_homebrew() {
 
 	step "Installing Homebrew..."
 
-	if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+	if run_step "install Homebrew" -- env NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
 		print_success "Homebrew installed!"
 	else
 		print_error "Homebrew failed to install"
@@ -324,8 +345,12 @@ link_dotfile() {
 	fi
 
 	mkdir -p "$(dirname "$dst")"
-	ln -s "$src" "$dst"
-	print_success "Linked $(basename "$dst")"
+	if run_step "ln -s $src $dst" -- ln -s "$src" "$dst"; then
+		print_success "Linked $(basename "$dst")"
+	else
+		print_error "Failed to link $(basename "$dst")"
+		return 1
+	fi
 }
 
 ###############################################################################
@@ -340,7 +365,7 @@ apply_macos_settings() {
 	fi
 
 	if ask "Apply macOS settings (Finder, Dock, trackpad, hot corners, etc.)?" Y; then
-		if bash "$settings_file"; then
+		if run_step "bash $settings_file" -- bash "$settings_file"; then
 			print_success "macOS settings applied"
 		else
 			print_error "Failed to apply macOS settings"
@@ -508,98 +533,125 @@ read_materials_file() {
 install_brew_formula() {
 	local formula="$1"
 
-	if brew list --formula 2>/dev/null | grep -qx "$formula"; then
+	if brew list --formula "$formula" >/dev/null 2>&1; then
 		print_success_muted "$formula already installed. Skipped."
 		return 0
 	fi
 
 	echo_install "Installing $formula"
-	brew install "$formula" &>/dev/null
-	print_success "$formula installed!"
+
+	if run_step "brew install $formula" -- brew install "$formula"; then
+		print_success "$formula installed!"
+	else
+		print_error "$formula failed to install"
+		return 1
+	fi
 }
 
 install_brew_tap() {
 	local tap="$1"
 
-	if brew tap 2>/dev/null | grep -qx "$tap"; then
+	if brew tap | grep -qx "$tap"; then
 		print_success_muted "$tap already tapped. Skipped."
 		return 0
 	fi
 
 	echo_install "Tapping $tap"
-	brew tap "$tap" &>/dev/null
-	print_success "$tap tapped!"
+
+	if run_step "brew tap $tap" -- brew tap "$tap"; then
+		print_success "$tap tapped!"
+	else
+		print_error "$tap failed to tap"
+		return 1
+	fi
 }
 
 install_brew_cask() {
 	local cask="$1"
 
-	if brew list --cask 2>/dev/null | grep -qx "$cask"; then
+	if brew list --cask "$cask" >/dev/null 2>&1; then
 		print_success_muted "$cask already installed. Skipped."
 		return 0
 	fi
 
 	echo_install "Installing $cask"
-	brew install --cask "$cask" --appdir=/Applications &>/dev/null
-	print_success "$cask installed!"
+
+	if run_step "brew install --cask $cask" -- brew install --cask "$cask" --appdir=/Applications; then
+		print_success "$cask installed!"
+	else
+		print_error "$cask failed to install"
+		return 1
+	fi
 }
 
 install_app_store_app() {
-	# entry format: "id::name"
 	local entry="$1"
 	local id="${entry%%::*}"
 	local name="${entry##*::}"
 
-	if ! command -v mas &>/dev/null; then
+	if ! command -v mas >/dev/null 2>&1; then
 		print_warning "mas is not installed. Add it to brew-formulae and re-run."
 		return 1
 	fi
 
-	if ! mas account &>/dev/null; then
+	if ! mas account >/dev/null 2>&1; then
 		print_warning "Please sign in to the App Store first. Skipping."
 		return 1
 	fi
 
-	if mas list 2>/dev/null | grep -q "^$id "; then
+	if mas list 2>/dev/null | awk '{print $1}' | grep -qx "$id"; then
 		print_success_muted "$name already installed. Skipped."
 		return 0
 	fi
 
 	echo_install "Installing $name"
-	mas install "$id" &>/dev/null
-	print_success "$name installed!"
+
+	if run_step "mas install $id" -- mas install "$id"; then
+		print_success "$name installed!"
+	else
+		print_error "$name failed to install"
+		return 1
+	fi
 }
 
 install_npm_package() {
-	# entry format: "package" or "package::command"
 	local entry="$1"
 	local package="${entry%%::*}"
 	local cmd="${entry##*::}"
 
-	if command -v "$cmd" &>/dev/null; then
+	if command -v "$cmd" >/dev/null 2>&1; then
 		print_success_muted "$package already installed. Skipped."
 		return 0
 	fi
 
 	echo_install "Installing $package"
-	npm install -g "$package" --silent
-	print_success "$package installed!"
+
+	if run_step "npm install -g $package" -- npm install -g "$package" --silent; then
+		print_success "$package installed!"
+	else
+		print_error "$package failed to install"
+		return 1
+	fi
 }
 
 install_pipx_package() {
-	# entry format: "package" or "package::command"
 	local entry="$1"
 	local package="${entry%%::*}"
 	local cmd="${entry##*::}"
 
-	if command -v "$cmd" &>/dev/null; then
+	if command -v "$cmd" >/dev/null 2>&1; then
 		print_success_muted "$package already installed. Skipped."
 		return 0
 	fi
 
 	echo_install "Installing $package"
-	pipx install "$package" &>/dev/null
-	print_success "$package installed!"
+
+	if run_step "pipx install $package" -- pipx install "$package"; then
+		print_success "$package installed!"
+	else
+		print_error "$package failed to install"
+		return 1
+	fi
 }
 
 
