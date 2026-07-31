@@ -1,24 +1,59 @@
 #!/usr/bin/env bash
 
 ###############################################################################
-# ERROR: Let the user know if the script fails
+# ERROR HANDLING
 ###############################################################################
 
-trap 'ret=$?; test $ret -ne 0 && printf "\n   \e[31m\033[0m  Ando has failed you  \e[31m\033[0m\n" >&2; exit $ret' EXIT
+handle_exit() {
+	local ret=$?
 
-set -e
+	if [ "$ret" -ne 0 ]; then
+		print_error "Ando exited unexpectedly (exit code: $ret)"
+	fi
+
+	exit "$ret"
+}
+
+handle_interrupt() {
+	printf "\n"
+	print_warning "User has interrupted Ando"
+	exit 130
+}
+
+trap handle_exit EXIT
+trap handle_interrupt INT TERM
 
 ###############################################################################
 # BLUEPRINTS: Check for required functions file
 ###############################################################################
 
-if [ -e blueprints ]; then
-	cd "$(dirname "${BASH_SOURCE[0]}")" \
-		&& . "blueprints"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -e "$SCRIPT_DIR/blueprints" ]; then
+	. "$SCRIPT_DIR/blueprints"
 else
 	printf "\n ⚠️  ./blueprints not found. \n"
 	exit 1
 fi
+
+###############################################################################
+# LOG: Every run is saved to ~/ando.log
+###############################################################################
+LOG_FILE="$HOME/ando.log"
+exec > >(tee "$LOG_FILE") 2>&1
+
+###############################################################################
+# STATE: Track failures to report at the end instead of aborting immediately
+###############################################################################
+FAILED_ITEMS=()
+
+track_failure() {
+	local description="$1"; shift
+
+	if ! "$@"; then
+		FAILED_ITEMS+=("$description")
+	fi
+}
 
 ###############################################################################
 # Go Ando Go!          https://www.ascii-art-generator.org/ ( font: Slant )
@@ -60,14 +95,14 @@ ask_for_sudo
 # PROMPT: SSH Key
 ###############################################################################
 chapter 'Checking for SSH key...'
-ssh_key_setup
+ssh_key_setup || true
 
 ###############################################################################
 # INSTALL: Prerequisites
 ###############################################################################
 chapter "Installing prerequisites..."
-check_xcode_clt
-check_homebrew
+track_failure "Xcode Command Line Tools" check_xcode_clt
+track_failure "Homebrew" check_homebrew
 
 ###############################################################################
 # INSTALL: formulae
@@ -76,7 +111,7 @@ if [ -e $cwd/materials/brew-formulae ]; then
 	chapter "Installing Homebrew formulae..."
 
 	while IFS= read -r formula; do
-		install_brew_formula "$formula"
+		track_failure "brew formula: $formula" install_brew_formula "$formula"
 	done < <(read_materials_file "$cwd/materials/brew-formulae")
 fi
 
@@ -87,7 +122,7 @@ if [ -e $cwd/materials/brew-casks ]; then
 	chapter "Installing apps via Homebrew..."
 
 	while IFS= read -r cask; do
-		install_brew_cask "$cask"
+		track_failure "brew cask: $cask" install_brew_cask "$cask"
 	done < <(read_materials_file "$cwd/materials/brew-casks")
 fi
 
@@ -98,7 +133,7 @@ if [ -e $cwd/materials/brew-taps ]; then
 	chapter "Installing Homebrew taps..."
 
 	while IFS= read -r tap; do
-		install_brew_tap "$tap"
+		track_failure "brew tap: $tap" install_brew_tap "$tap"
 	done < <(read_materials_file "$cwd/materials/brew-taps")
 fi
 
@@ -113,34 +148,11 @@ brew update
 ###############################################################################
 # INSTALL: Mac App Store Apps
 ###############################################################################
-# chapter "Installing apps from App Store..."
-# if [ -x mas ]; then
-
-# 	print_warning "Please install mas-cli first: brew mas. Skipping."
-
-# 	else
-
-# 	if [ -e $cwd/materials/apps ]; then
-# 		if mas_setup; then
-# 			# Workaround for associative array in Bash 3
-# 			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
-# 			for app in $(<$cwd/materials/apps); do
-# 				KEY="${app%%::*}"
-# 				VALUE="${app##*::}"
-# 				install_application_via_app_store $KEY $VALUE
-# 			done
-# 		else
-# 			print_warning "Please signin to App Store first. Skipping."
-# 		fi
-# 	fi
-
-# fi
-
 if [ -e $cwd/materials/app-store ]; then
 	chapter "Installing apps from the App Store..."
 
 	while IFS= read -r app; do
-		install_app_store_app "$app"
+		track_failure "App Store: ${app##*::}" install_app_store_app "$app"
 	done < <(read_materials_file "$cwd/materials/app-store")
 fi
 
@@ -153,21 +165,11 @@ brew cleanup 2> /dev/null
 ###############################################################################
 # INSTALL: npm packages
 ###############################################################################
-# if [ -e $cwd/materials/npm ]; then
-# 	chapter "Installing npm packages..."
-
-# 	for pkg in $(<$cwd/materials/npm); do
-# 		KEY="${pkg%%::*}"
-# 		VALUE="${pkg##*::}"
-# 		install_npm_packages $KEY $VALUE
-# 	done
-# fi
-
 if [ -e $cwd/materials/npm-packages ]; then
 	chapter "Installing npm packages..."
 
 	while IFS= read -r pkg; do
-		install_npm_package "$pkg"
+		track_failure "npm: ${pkg%%::*}" install_npm_package "$pkg"
 	done < <(read_materials_file "$cwd/materials/npm-packages")
 fi
 
@@ -178,7 +180,7 @@ if [ -e $cwd/materials/pipx-packages ]; then
 	chapter "Installing pipx packages..."
 
 	while IFS= read -r pkg; do
-		install_pipx_package "$pkg"
+		track_failure "pipx: ${pkg%%::*}" install_pipx_package "$pkg"
 	done < <(read_materials_file "$cwd/materials/pipx-packages")
 fi
 
@@ -198,13 +200,29 @@ fi
 # DOTFILES
 ###############################################################################
 chapter "Setting up dotfiles..."
-setup_dotfiles
+track_failure "dotfiles" setup_dotfiles
 
 ###############################################################################
 # MACOS SETTINGS
 ###############################################################################
 chapter "macOS settings..."
 apply_macos_settings
+
+###############################################################################
+# SUMMARY
+###############################################################################
+chapter "Summary"
+
+if [ "${#FAILED_ITEMS[@]}" -eq 0 ]; then
+	print_success "Everything ran clean — no failures."
+else
+	print_error "${#FAILED_ITEMS[@]} item(s) failed:"
+	for item in "${FAILED_ITEMS[@]}"; do
+		print_muted "  • $item"
+	done
+fi
+
+print_muted "Full log saved to $LOG_FILE"
 
 ###############################################################################
 # END
