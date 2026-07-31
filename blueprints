@@ -287,6 +287,28 @@ link_dotfile() {
 	print_success "Linked $(basename "$dst")"
 }
 
+###############################################################################
+# MACOS SETTINGS
+###############################################################################
+
+apply_macos_settings() {
+	local settings_file="$cwd/materials/macos-settings"
+
+	if [ ! -f "$settings_file" ]; then
+		return 0
+	fi
+
+	if ask "Apply macOS settings (Finder, Dock, trackpad, hot corners, etc.)?" Y; then
+		if bash "$settings_file"; then
+			print_success "macOS settings applied"
+		else
+			print_error "Failed to apply macOS settings"
+			return 1
+		fi
+	else
+		print_muted "Skipped macOS settings."
+	fi
+}
 
 ###############################################################################
 # Prompts
