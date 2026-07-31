@@ -252,24 +252,11 @@ if [ -e $cwd/materials/manual-install ]; then
 	done < <(read_materials_file "$cwd/materials/manual-install")
 fi
 
-# NOTE: this will be handled with GNU Stow
 ###############################################################################
-# LINK: dotfiles
+# DOTFILES
 ###############################################################################
-chapter "Linking dotfiles..."
-if [ -e $cwd/materials/dotfiles ]; then
-	
-		if ask "Last Step. Do you want to link the dotfiles?" Y; then
-			symlink_dotfiles;
-			echo "\n";
-			print_success "Dotfiles complete.";
-	
-	else
-		print_success_muted "Linking was declined. Skipped.";
-	fi
-else
-	print_warning "Something went wrong. Skipping."
-fi
+chapter "Setting up dotfiles..."
+setup_dotfiles
 
 ###############################################################################
 # END
