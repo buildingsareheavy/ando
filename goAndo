@@ -77,7 +77,7 @@ printf "
                                        
 ╭───────────────────────────────────────────────────╮
 │  Safe to run multiple times on the same machine.  │
-│  It ${green}installs${reset}, ${blue}upgrades${reset}, or ${yellow}skips${reset} packages based   │
+│  It installs, upgrades, or skips packages based   │
 │  on what is already installed on the machine.     │
 ╰───────────────────────────────────────────────────╯
 "
@@ -92,7 +92,7 @@ fi
 ###############################################################################
 
 chapter "Checking internet connection..."
-check_internet_connection
+require_critical "Internet connection" check_internet_connection
 
 
 ###############################################################################
@@ -100,7 +100,7 @@ check_internet_connection
 ###############################################################################
 
 chapter "Caching password..."
-ask_for_sudo
+require_critical "sudo access" ask_for_sudo
 
 
 ###############################################################################
@@ -108,7 +108,7 @@ ask_for_sudo
 ###############################################################################
 
 chapter 'Checking for SSH key...'
-ssh_key_setup || true
+require_critical "SSH key setup" ssh_key_setup
 
 
 ###############################################################################
@@ -116,8 +116,8 @@ ssh_key_setup || true
 ###############################################################################
 
 chapter "Installing prerequisites..."
-track_failure "Xcode Command Line Tools" check_xcode_clt
-track_failure "Homebrew" check_homebrew
+require_critical "Xcode Command Line Tools" check_xcode_clt
+require_critical "Homebrew" check_homebrew
 
 
 ###############################################################################
@@ -181,12 +181,12 @@ track_failure "brew cleanup" brew cleanup
 
 if [ -e "$cwd/materials/app-store" ]; then
 	chapter "Installing apps from the App Store..."
+	require_critical "App Store sign-in" check_mas_signed_in
 
 	while IFS= read -r app; do
 		track_failure "App Store: ${app##*::}" install_app_store_app "$app"
 	done < <(read_materials_file "$cwd/materials/app-store")
 fi
-
 
 ###############################################################################
 # INSTALL: npm Packages

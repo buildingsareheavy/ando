@@ -4,13 +4,12 @@
 # Variables
 ###############################################################################
 
-cwd="$(cd "$(dirname "$0")" && pwd)"
+cwd="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 count=1
 DRY_RUN=${DRY_RUN:-false}
 
 bold=$(tput bold 2>/dev/null)
-normal=$(tput sgr0 2>/dev/null)
-reset="$normal"
+reset=$(tput sgr0 2>/dev/null)
 dim=$(tput dim 2>/dev/null)
 underline=$(tput smul 2>/dev/null)
 
@@ -33,7 +32,7 @@ _print_in_color() {
 }
 
 print_dry_run() {
-    printf "  ${dim}[dry-run] would run: $1${reset}\n"
+	printf "  ${dim}[dry-run] %s${reset}\n" "$1"
 }
 
 run_step() {
@@ -45,7 +44,7 @@ run_step() {
 		return 0
 	fi
 
-	"$@" &>/dev/null
+	"$@"
 }
 
 
@@ -104,9 +103,9 @@ check_macos() {
 check_internet_connection() {
 	if ping -q -W1 -c1 google.com &>/dev/null; then
 		print_success "Internet connection"
+		return 0
 	else
-		print_error "Please check your internet connection"
-		exit 1
+		return 1
 	fi
 }
 
@@ -123,16 +122,18 @@ check_xcode_clt() {
 		return 0
 	fi
 
-	step "Installing Xcode Command Line Tools..."
-
 	if [ "$DRY_RUN" == "true" ]; then
 		print_dry_run "xcode-select --install"
 		return 0
 	fi
 
-	xcode-select --install 2>/dev/null || true
+	if [ -z "$XCODE_CLT_TRIGGERED" ]; then
+		step "Installing Xcode Command Line Tools..."
+		xcode-select --install 2>/dev/null || true
+		XCODE_CLT_TRIGGERED=1
+		print_muted "Complete the installation in the dialog that opened, then retry."
+	fi
 
-	print_muted "Complete the installation in the dialog that opened, then rerun Ando."
 	return 1
 }
 
@@ -144,7 +145,12 @@ check_homebrew() {
 
 	step "Installing Homebrew..."
 
-	if run_step "install Homebrew" -- env NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+	if [ "$DRY_RUN" == "true" ]; then
+		print_dry_run "install Homebrew (NONINTERACTIVE=1 /bin/bash -c \"\$(curl -fsSL .../install.sh)\")"
+		return 0
+	fi
+
+	if env NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
 		print_success "Homebrew installed!"
 	else
 		print_error "Homebrew failed to install"
@@ -297,6 +303,25 @@ ask() {
         esac
 
     done
+}
+
+###############################################################################
+# Critical Checks
+###############################################################################
+
+require_critical() {
+	local description="$1"; shift
+
+	until "$@"; do
+		print_error "$description failed."
+
+		if ask "Resolve it, then retry?" Y; then
+			continue
+		fi
+
+		print_error "Cannot continue without $description. Exiting."
+		exit 1
+	done
 }
 
 
@@ -457,6 +482,21 @@ install_brew_cask() {
 	fi
 }
 
+check_mas_signed_in() {
+	if ! command -v mas >/dev/null 2>&1; then
+		print_error "mas is not installed. Add it to brew-formulae and re-run Ando."
+		return 1
+	fi
+
+	if mas account >/dev/null 2>&1; then
+		print_success_muted "Signed in to the App Store."
+		return 0
+	fi
+
+	print_muted "Sign in to the App Store app, then retry."
+	return 1
+}
+
 install_app_store_app() {
 	local entry="$1"
 	local id="${entry%%::*}"
@@ -534,7 +574,7 @@ install_pipx_package() {
 
 chapter() {
     local fmt="$1"; shift
-    printf "\n✦  ${bold}$((count++)). $fmt${normal}\n└─────────────────────────────────────────────────────○\n" "$@"
+    printf "\n✦  ${bold}$((count++)). $fmt${reset}\n└─────────────────────────────────────────────────────○\n" "$@"
 }
 
 echo_install() {
@@ -548,6 +588,6 @@ step() {
 
 e_all_finished() {
     printf "
-  ${bold}Everything is installed. Make Ando proud. ${normal} 
+  ${bold}Everything is installed. Make Ando proud. ${reset} 
 "
 }
