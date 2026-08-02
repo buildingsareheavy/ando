@@ -181,8 +181,7 @@ track_failure "brew cleanup" brew cleanup
 
 if [ -e "$cwd/materials/app-store" ]; then
 	chapter "Installing apps from the App Store..."
-	require_critical "App Store sign-in" check_mas_signed_in
-
+	require_critical "mas installed" check_mas_installed
 	while IFS= read -r app; do
 		track_failure "App Store: ${app##*::}" install_app_store_app "$app"
 	done < <(read_materials_file "$cwd/materials/app-store")
@@ -195,11 +194,14 @@ fi
 if [ -e "$cwd/materials/npm-packages" ]; then
 	chapter "Installing npm packages..."
 
-	while IFS= read -r pkg; do
-		track_failure "npm: ${pkg%%::*}" install_npm_package "$pkg"
-	done < <(read_materials_file "$cwd/materials/npm-packages")
+	if track_failure "Node.js (nvm)" setup_node; then
+		while IFS= read -r pkg; do
+			track_failure "npm: ${pkg%%::*}" install_npm_package "$pkg"
+		done < <(read_materials_file "$cwd/materials/npm-packages")
+	else
+		print_muted "Skipping npm packages — Node.js isn't available."
+	fi
 fi
-
 
 ###############################################################################
 # INSTALL: pipx Packages

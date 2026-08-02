@@ -1,7 +1,7 @@
 arduino-cli
 btop
 composer
-ddev
+ddev/ddev/ddev
 exiftool
 fastfetch
 ffmpeg

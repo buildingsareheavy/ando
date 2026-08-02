@@ -151,6 +151,13 @@ check_homebrew() {
 	fi
 
 	if env NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+		eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
+
+		if ! command -v brew >/dev/null 2>&1; then
+			print_error "Homebrew installed but not found on PATH"
+			return 1
+		fi
+
 		print_success "Homebrew installed!"
 	else
 		print_error "Homebrew failed to install"
@@ -482,18 +489,13 @@ install_brew_cask() {
 	fi
 }
 
-check_mas_signed_in() {
-	if ! command -v mas >/dev/null 2>&1; then
-		print_error "mas is not installed. Add it to brew-formulae and re-run Ando."
-		return 1
-	fi
-
-	if mas account >/dev/null 2>&1; then
-		print_success_muted "Signed in to the App Store."
+check_mas_installed() {
+	if command -v mas >/dev/null 2>&1; then
+		print_success_muted "mas is installed."
 		return 0
 	fi
 
-	print_muted "Sign in to the App Store app, then retry."
+	print_muted "mas isn't installed yet (should come from brew-formulae above)."
 	return 1
 }
 
@@ -504,11 +506,6 @@ install_app_store_app() {
 
 	if ! command -v mas >/dev/null 2>&1; then
 		print_warning "mas is not installed. Add it to brew-formulae and re-run."
-		return 1
-	fi
-
-	if ! mas account >/dev/null 2>&1; then
-		print_warning "Please sign in to the App Store first. Skipping."
 		return 1
 	fi
 
@@ -525,6 +522,35 @@ install_app_store_app() {
 		print_error "$name failed to install"
 		return 1
 	fi
+}
+
+setup_node() {
+	local nvm_prefix
+
+	if ! nvm_prefix=$(brew --prefix nvm 2>/dev/null); then
+		print_error "nvm is not installed. Add it to brew-formulae and re-run."
+		return 1
+	fi
+
+	export NVM_DIR="$HOME/.nvm"
+	mkdir -p "$NVM_DIR"
+
+	# shellcheck disable=SC1091
+	[ -s "$nvm_prefix/nvm.sh" ] && source "$nvm_prefix/nvm.sh"
+
+	if ! command -v node >/dev/null 2>&1; then
+		step "Installing Node.js via nvm..."
+
+		if [ "$DRY_RUN" == "true" ]; then
+			print_dry_run "nvm install --lts"
+		elif ! nvm install --lts >/dev/null; then
+			print_error "Node.js failed to install via nvm"
+			return 1
+		fi
+	fi
+
+	nvm use --lts >/dev/null 2>&1 || true
+	command -v npm >/dev/null 2>&1
 }
 
 install_npm_package() {
