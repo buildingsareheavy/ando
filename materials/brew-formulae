@@ -8,13 +8,16 @@ ffmpeg
 gh
 git
 mas
+neovim
 nvm
 php
 pipx
 pyenv
+ripgrep
 spotify_player
 starship
 tmux
+tree-sitter-cli
 wget
 wp-cli
 yazi
