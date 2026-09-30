@@ -27,6 +27,11 @@ defaults write com.apple.finder ShowStatusBar -bool true
 defaults write com.apple.finder NewWindowTarget -string "PfHm"
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 
+# Set the default view style for folders without custom setting to "list view"
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+
+
 ###############################################################################
 # DOCK
 ###############################################################################
@@ -43,6 +48,9 @@ defaults write com.apple.dock autohide-time-modifier -float 0.2
 # Desktop & Dock > Minimize windows using: Scale Effect
 defaults write com.apple.dock mineffect -string "scale"
 
+# Don't show suggested and recent apps in Dock
+# Desktop & Dock > Show suggested and recent apps in Dock
+defaults write com.apple.dock show-recents -bool false && killall Dock
 
 ###############################################################################
 # TRACKPAD / MOUSE

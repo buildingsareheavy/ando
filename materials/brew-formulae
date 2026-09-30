@@ -2,8 +2,10 @@ arduino-cli
 btop
 composer
 ddev/ddev/ddev
+dua-cli # Disk Usage Analyzer, use i for TUI. However, use ncdu instead for servers, it's more ubiquitous
 exiftool
 fastfetch
+fd # needed for neovim
 ffmpeg
 gh
 git
@@ -13,11 +15,12 @@ nvm
 php
 pipx
 pyenv
-ripgrep
+ripgrep # needed for neovim
+rsync # This is an updated version of macOS's openrsync
 spotify_player
 starship
 tmux
-tree-sitter-cli
+tree-sitter-cli # needed for neovim
 wget
 wp-cli
 yazi
