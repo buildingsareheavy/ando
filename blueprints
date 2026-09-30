@@ -426,6 +426,11 @@ read_materials_file() {
 		[ -z "$line" ] && continue
 		[[ "$line" == \#* ]] && continue
 
+		line="${line%%#*}"                          # remove inline comments
+		line="${line%"${line##*[![:space:]]}"}"   # trim trailing whitespace
+
+		[ -z "$line" ] && continue
+
 		printf "%s\n" "$line"
 	done < "$file"
 }
