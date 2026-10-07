@@ -7,8 +7,10 @@ exiftool
 fastfetch
 fd # needed for neovim
 ffmpeg
+fzf
 gh
 git
+lazygit
 mas
 neovim
 nvm
@@ -25,5 +27,6 @@ wget
 wp-cli
 yazi
 yt-dlp
+zoxide
 zsh-autosuggestions
 zsh-syntax-highlighting
