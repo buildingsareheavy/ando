@@ -39,6 +39,17 @@ fi
 
 
 ###############################################################################
+# OPTIONS & FLAGS
+###############################################################################
+
+PACKAGES_ONLY=false
+
+if [ "$1" == "--packages-only" ]; then
+	PACKAGES_ONLY=true
+fi
+
+
+###############################################################################
 # LOG: Every run is saved to ~/ando.log
 ###############################################################################
 
@@ -99,8 +110,10 @@ require_critical "Internet connection" check_internet_connection
 # PROMPT: Password
 ###############################################################################
 
-chapter "Caching password..."
-require_critical "sudo access" ask_for_sudo
+if [ "$PACKAGES_ONLY" = false ]; then
+	chapter "Caching password..."
+	require_critical "sudo access" ask_for_sudo
+fi
 
 
 ###############################################################################
@@ -187,6 +200,7 @@ if [ -e "$cwd/materials/app-store" ]; then
 	done < <(read_materials_file "$cwd/materials/app-store")
 fi
 
+
 ###############################################################################
 # INSTALL: npm Packages
 ###############################################################################
@@ -202,6 +216,7 @@ if [ -e "$cwd/materials/npm-packages" ]; then
 		print_muted "Skipping npm packages — Node.js isn't available."
 	fi
 fi
+
 
 ###############################################################################
 # INSTALL: pipx Packages

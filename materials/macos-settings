@@ -7,6 +7,7 @@
 ###############################################################################
 # FINDER
 ###############################################################################
+
 # Show hidden files
 # Finder > View > Show Hidden Files
 defaults write com.apple.finder AppleShowAllFiles -bool true
@@ -31,10 +32,10 @@ defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
 defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 
 
-
 ###############################################################################
 # DOCK
 ###############################################################################
+
 # Automatically hide and show the Dock
 defaults write com.apple.dock autohide -bool true
 
@@ -55,6 +56,7 @@ defaults write com.apple.dock show-recents -bool false && killall Dock
 ###############################################################################
 # TRACKPAD / MOUSE
 ###############################################################################
+
 # Natural scrolling ON
 # Trackpad > Scroll & Zoom > Natural scrolling
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
@@ -68,27 +70,41 @@ defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 0
 # Trackpad > Point & Click > Secondary click
 defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool false
 
+
+###############################################################################
+# KEYBOARD
+###############################################################################
+
+# Enable key to repeat on hold instead of "press-and-hold" accent menu
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+
 ###############################################################################
 # HOT CORNERS
 ###############################################################################
+
 # Disable all hot corners
 defaults write com.apple.dock wvous-tl-corner -int 1
 defaults write com.apple.dock wvous-tr-corner -int 1
 defaults write com.apple.dock wvous-bl-corner -int 1
 defaults write com.apple.dock wvous-br-corner -int 1
 
+
 ###############################################################################
 # SCREENSHOTS
 ###############################################################################
+
 # Create screenshot folder
 mkdir -p "${HOME}/Pictures/Screenshots"
 
 # Save screenshots to ~/Pictures/Screenshots
 defaults write com.apple.screencapture location "${HOME}/Pictures/Screenshots"
 
+
 ###############################################################################
 # NOTES FOR MANUAL CONFIGURATIONS
 ###############################################################################
+
 # System Settings > Desktop & Dock > Mission Control
 # Mission Control > Mouse Button 3
 
@@ -96,9 +112,11 @@ defaults write com.apple.screencapture location "${HOME}/Pictures/Screenshots"
 # Display as: Stack
 # View Content as: List
 
+
 ###############################################################################
 # APPLY CHANGES
 ###############################################################################
+
 killall Finder 2>/dev/null
 killall Dock 2>/dev/null
 killall SystemUIServer 2>/dev/null
