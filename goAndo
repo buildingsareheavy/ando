@@ -93,6 +93,10 @@ printf "
 ╰───────────────────────────────────────────────────╯
 "
 
+if [ "$PACKAGES_ONLY" = true ]; then
+	printf "  ${color_yellow}[packages-only mode. Skipping interactive configuration steps]${reset}\n"
+fi
+
 if [ "$DRY_RUN" == "true" ]; then
 	printf "  ${color_yellow}[using dry-run mode. Ando will not install or change anything]${reset}\n"
 fi
@@ -120,8 +124,10 @@ fi
 # PROMPT: SSH Key
 ###############################################################################
 
-chapter 'Checking for SSH key...'
-require_critical "SSH key setup" ssh_key_setup
+if [ "$PACKAGES_ONLY" = false ]; then
+	chapter 'Checking for SSH key...'
+	require_critical "SSH key setup" ssh_key_setup
+fi
 
 
 ###############################################################################
@@ -249,17 +255,20 @@ fi
 # Dotfiles
 ###############################################################################
 
-chapter "Setting up dotfiles..."
-track_failure "dotfiles" setup_dotfiles
-
+if [ "$PACKAGES_ONLY" = false ]; then
+	chapter "Setting up dotfiles..."
+	track_failure "dotfiles" setup_dotfiles
+fi
 
 ###############################################################################
 # MacOS Settings
 ###############################################################################
 
-chapter "Updating macOS settings..."
-track_failure "macOS settings" apply_macos_settings
 
+if [ "$PACKAGES_ONLY" = false ]; then
+	chapter "Updating macOS settings..."
+	track_failure "macOS settings" apply_macos_settings
+fi
 
 ###############################################################################
 # Summary
