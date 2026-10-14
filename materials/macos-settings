@@ -105,12 +105,18 @@ defaults write com.apple.screencapture location "${HOME}/Pictures/Screenshots"
 # NOTES FOR MANUAL CONFIGURATIONS
 ###############################################################################
 
+# Makes middle mouse button mission control
 # System Settings > Desktop & Dock > Mission Control
 # Mission Control > Mouse Button 3
 
 # Downloads & Documents directories on right side of dock
 # Display as: Stack
 # View Content as: List
+
+# Switch Caps Lock to Esc key
+# System Settings > Keyboard > Keyboard Shortcuts > Modifier Keys
+# Remember to choose each keyboard via Select Keyboard dropdown
+# Caps Lock > Escape
 
 
 ###############################################################################
